@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 
 /**
  * WARNING: this object is not thread safe!
@@ -18,8 +18,8 @@ public class LIFReader {
 
 	public final LIFFile rootFile;
 	
+	private final HashMap<String, LIFFile> filesMap;
 	private final RandomAccessFile file;
-
 	private final long baseOffset;
 	
 	public static LIFReader openLIFFile(File lifFile) throws IOException {
@@ -48,12 +48,12 @@ public class LIFReader {
 		file.seek(baseOffset + directoryOffset);
 		IntContainer fileOffset = new IntContainer();
 		fileOffset.value = packedFileOffset;
-		LIFFile rootFile = parseInternalFolder(prefix, file, fileOffset);
+		LIFFile rootFile = parseInternalFolder(prefix, "/", file, fileOffset);
 		return rootFile;
 	}
 	
 	public LIFFile getFileAt(String path) {
-		throw new UnsupportedOperationException();
+		return filesMap.get(path);
 	}
 
 	public LIFReader readInternalLIFFile(LIFFile internalFile) throws IOException {
@@ -76,7 +76,7 @@ public class LIFReader {
 		}
 	}
 
-	private static LIFFile parseInternalFolder(String folderName, RandomAccessFile file, IntContainer fileOffset) throws IOException {
+	private static LIFFile parseInternalFolder(String folderName, String pathThusFar, RandomAccessFile file, IntContainer fileOffset) throws IOException {
 		ArrayList<LIFFile> folderContents = new ArrayList<LIFFile>();
 		if(folderName.equals("")) {
 			file.skipBytes(36);
@@ -98,10 +98,11 @@ public class LIFReader {
 				name += currentChar;
 				currentChar = file.readChar();
 			}
+			String fullPath = pathThusFar + "/" + name;
 			file.skipBytes(4);
 			if(entryType == 1) {
 				fileOffset.value += 20;
-				LIFFile childDirectory = parseInternalFolder(name, file, fileOffset);
+				LIFFile childDirectory = parseInternalFolder(name, fullPath, file, fileOffset);
 				folderContents.add(childDirectory);
 			} else if(entryType == 2) {
 				fileOffset.value += 20;
@@ -109,17 +110,26 @@ public class LIFReader {
 				int fileSize = file.readInt() - 20;
 				file.skipBytes(20);
 				fileOffset.value += fileSize;
-				LIFFile childFile = new LIFFile(name, offsetInLIF, fileSize);
+				LIFFile childFile = new LIFFile(name, fullPath, offsetInLIF, fileSize);
 				folderContents.add(childFile);
 			}
 		}
-		return new LIFFile(folderName, folderContents.toArray(new LIFFile[folderContents.size()]));
+		return new LIFFile(folderName, pathThusFar, folderContents.toArray(new LIFFile[folderContents.size()]));
 	}
 	
 	private LIFReader(RandomAccessFile file, LIFFile rootFile, long baseOffset) {
 		this.file = file;
 		this.rootFile = rootFile;
 		this.baseOffset = baseOffset;
+		this.filesMap = new HashMap<String, LIFFile>();
+		populateFilesMap(rootFile);
+	}
+
+	private void populateFilesMap(LIFFile file) {
+		filesMap.put(file.path, file);
+		for(LIFFile child : file.children) {
+			populateFilesMap(child);
+		}
 	}
 }
 
