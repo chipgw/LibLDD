@@ -4,13 +4,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * WARNING: this object is not thread safe!
  * @author Bart
  *
  */
-public class LifReader {
+public class LIFReader {
 	public static final String rootPath = "/";
 	private static final int packedFileOffset = 84;
 	private static final byte[] headerArray = new byte[4];
@@ -21,7 +22,7 @@ public class LifReader {
 
 	private final long baseOffset;
 	
-	public static LifReader openLIFFile(File lifFile) throws IOException {
+	public static LIFReader openLIFFile(File lifFile) throws IOException {
 		if(!lifFile.isFile() || !lifFile.getName().endsWith(".lif")) {
 			throw new RuntimeException("The supplied file is not a LIF file.");
 		}
@@ -31,7 +32,7 @@ public class LifReader {
 		long positionOffset = 0;
 		
 		LIFFile rootFile = parseLIFFile(file, positionOffset);
-		LifReader reader = new LifReader(file, rootFile, positionOffset);
+		LIFReader reader = new LIFReader(file, rootFile, positionOffset);
 		
 		return reader;
 	}
@@ -55,9 +56,9 @@ public class LifReader {
 		throw new UnsupportedOperationException();
 	}
 
-	public LifReader readInternalLIFFile(LIFFile internalFile) throws IOException {
+	public LIFReader readInternalLIFFile(LIFFile internalFile) throws IOException {
 		LIFFile rootFile = parseLIFFile(this.file, internalFile.fileOffset);
-		LifReader reader = new LifReader(this.file, rootFile, internalFile.fileOffset);
+		LIFReader reader = new LIFReader(this.file, rootFile, internalFile.fileOffset);
 		return reader;
 	}
 	
@@ -115,7 +116,7 @@ public class LifReader {
 		return new LIFFile(folderName, folderContents.toArray(new LIFFile[folderContents.size()]));
 	}
 	
-	private LifReader(RandomAccessFile file, LIFFile rootFile, long baseOffset) {
+	private LIFReader(RandomAccessFile file, LIFFile rootFile, long baseOffset) {
 		this.file = file;
 		this.rootFile = rootFile;
 		this.baseOffset = baseOffset;

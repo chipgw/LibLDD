@@ -25,6 +25,10 @@ public class LIFFile {
 		this.fileSize = fileSize;
 	}
 	
+	public String toString() {
+		return name;
+	}
+	
 	public LIFFile clone() {
 		LIFFile[] childFiles = new LIFFile[children.length];
 		System.arraycopy(children, 0, childFiles, 0, children.length);
