@@ -48,7 +48,7 @@ public class LIFReader {
 		file.seek(baseOffset + directoryOffset);
 		IntContainer fileOffset = new IntContainer();
 		fileOffset.value = packedFileOffset;
-		LIFFile rootFile = parseInternalFolder(prefix, "/", file, fileOffset);
+		LIFFile rootFile = parseInternalFolder(prefix, "", file, fileOffset);
 		return rootFile;
 	}
 	
