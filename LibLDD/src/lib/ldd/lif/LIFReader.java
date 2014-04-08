@@ -17,6 +17,7 @@ public class LIFReader {
 	private static final byte[] headerArray = new byte[4];
 
 	public final LIFFile rootFile;
+	public final File sourceFile;
 	
 	private final HashMap<String, LIFFile> filesMap;
 	private final RandomAccessFile file;
@@ -32,7 +33,7 @@ public class LIFReader {
 		long positionOffset = 0;
 		
 		LIFFile rootFile = parseLIFFile(file, positionOffset);
-		LIFReader reader = new LIFReader(file, rootFile, positionOffset);
+		LIFReader reader = new LIFReader(file, lifFile, rootFile, positionOffset);
 		
 		return reader;
 	}
@@ -58,7 +59,7 @@ public class LIFReader {
 
 	public LIFReader readInternalLIFFile(LIFFile internalFile) throws IOException {
 		LIFFile rootFile = parseLIFFile(this.file, internalFile.fileOffset);
-		LIFReader reader = new LIFReader(this.file, rootFile, internalFile.fileOffset);
+		LIFReader reader = new LIFReader(this.file, this.sourceFile, rootFile, internalFile.fileOffset);
 		return reader;
 	}
 	
@@ -117,11 +118,12 @@ public class LIFReader {
 		return new LIFFile(folderName, pathThusFar, folderContents.toArray(new LIFFile[folderContents.size()]));
 	}
 	
-	private LIFReader(RandomAccessFile file, LIFFile rootFile, long baseOffset) {
+	private LIFReader(RandomAccessFile file, File lifFile, LIFFile rootFile, long baseOffset) {
 		this.file = file;
 		this.rootFile = rootFile;
 		this.baseOffset = baseOffset;
 		this.filesMap = new HashMap<String, LIFFile>();
+		this.sourceFile = lifFile;
 		populateFilesMap(rootFile);
 	}
 
