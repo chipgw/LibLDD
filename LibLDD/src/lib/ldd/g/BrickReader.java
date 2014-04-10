@@ -19,7 +19,6 @@ public class BrickReader {
 		byte[] fileContents = new byte[(int) file.length()];
 		FileInputStream stream = new FileInputStream(file);
 		stream.read(fileContents);
-//		System.out.print(file.getName() + "\t");
 		stream.close();
 		return readGeometryFile(fileContents);
 	}
@@ -57,11 +56,6 @@ public class BrickReader {
 		}
 		for(int i = 0; i < indexCount; i++) {
 			indices[i] = buffer.getInt();
-		}
-		
-		int num = buffer.getInt();
-		for(int i = 0; i < num; i++) {
-			buffer.getInt();
 		}
 		
 		if(texturesEnabled) {
