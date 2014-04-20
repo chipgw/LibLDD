@@ -22,6 +22,7 @@ public class LXFMLReader {
 			stream.close();
 			Element rootElement = doc.getRootElement();
 			checkLIF(dbLifReader);
+			verifyFileVersion(rootElement);
 			return parseLXFMLFile(rootElement, dbLifReader);
 		} catch (ValidityException e) {
 			e.printStackTrace();
@@ -31,7 +32,13 @@ public class LXFMLReader {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
+		} catch (Exception e) {
+			
 		}
+	}
+	
+	private static Mesh parseLXFMLFile(Element rootElement, LIFReader dbLifReader) {
+		return null;
 	}
 
 	private static void checkLIF(LIFReader dbLifReader) {
@@ -39,8 +46,11 @@ public class LXFMLReader {
 			throw new RuntimeException("The LXFML loader requires a LIFReader pointed at the db.lif file within LDD's Assets.lif.");
 		}
 	}
-
-	private static Mesh parseLXFMLFile(Element rootElement, LIFReader dbLifReader) {
-		return null;
+	
+	private static void verifyFileVersion(Element rootElement) throws Exception {
+		String versionMajor = rootElement.getAttributeValue("versionMajor");
+		if(!versionMajor.equals("5")) {
+			throw new Exception("This loader only supports LXFML version 5.");
+		}
 	}
 }
