@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.HashMap;
 
+import lib.ldd.data.Material;
+import lib.ldd.data.MaterialType;
 import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;

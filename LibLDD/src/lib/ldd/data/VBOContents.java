@@ -1,11 +1,11 @@
-package lib.gl.vbo;
+package lib.ldd.data;
 
 import java.util.Arrays;
 
 import lib.util.array.ArrayUtil;
 import lib.util.array.NumberUtil;
 
-public class BufferCombo {
+public class VBOContents {
 
 	public final float[] vertices;
 	public final float[] textures;
@@ -14,7 +14,7 @@ public class BufferCombo {
 	
 	public final boolean texturesEnabled;
 
-	public BufferCombo(float[] vertices, float[] normals, int[] indices) {
+	public VBOContents(float[] vertices, float[] normals, int[] indices) {
 		this.vertices = vertices;
 		this.normals = normals;
 		this.indices = indices;
@@ -22,7 +22,7 @@ public class BufferCombo {
 		this.texturesEnabled = false;
 	}
 	
-	public BufferCombo(float[] vertices, float[] normals, float[] textures, int[] indices) {
+	public VBOContents(float[] vertices, float[] normals, float[] textures, int[] indices) {
 		this.vertices = vertices;
 		this.normals = normals;
 		this.indices = indices;
@@ -30,7 +30,7 @@ public class BufferCombo {
 		this.texturesEnabled = true;
 	}
 
-	public BufferCombo merge(BufferCombo part) {
+	public VBOContents merge(VBOContents part) {
 		float[] combinedVertices = ArrayUtil.concat(this.vertices, part.vertices);
 		float[] combinedNormals = ArrayUtil.concat(this.normals, part.normals);
 		float[] combinedTextureCoords = ArrayUtil.concat(this.textures, part.textures);
@@ -40,9 +40,9 @@ public class BufferCombo {
 		int[] combinedIndices = ArrayUtil.concat(this.indices, partIndices);
 		
 		if(this.texturesEnabled && part.texturesEnabled) {
-			return new BufferCombo(combinedVertices, combinedNormals, combinedTextureCoords, combinedIndices);
+			return new VBOContents(combinedVertices, combinedNormals, combinedTextureCoords, combinedIndices);
 		} else {
-			return new BufferCombo(combinedVertices, combinedNormals, combinedIndices);
+			return new VBOContents(combinedVertices, combinedNormals, combinedIndices);
 		}
 	}
 

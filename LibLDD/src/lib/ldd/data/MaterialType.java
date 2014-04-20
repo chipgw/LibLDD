@@ -1,4 +1,4 @@
-package lib.ldd.materials;
+package lib.ldd.data;
 
 public enum MaterialType {
 	shinyPlastic,

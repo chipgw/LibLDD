@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import lib.gl.vbo.BufferCombo;
+import lib.ldd.data.VBOContents;
 
 public class BrickReader {
 	private static final int TEXTURE_COORDINATES_INCLUDED = 0x1;
 
-	public static BufferCombo readGeometryFile(File file) throws IOException {
+	public static VBOContents readGeometryFile(File file) throws IOException {
 		if(!file.exists()) {
 			throw new FileNotFoundException();
 		}
@@ -23,11 +23,11 @@ public class BrickReader {
 		return readGeometryFile(fileContents);
 	}
 	
-	public static BufferCombo readGeometryFile(byte[] fileContents) throws IOException {
+	public static VBOContents readGeometryFile(byte[] fileContents) throws IOException {
 		return loadSingleGeometryFile(fileContents);
 	}
 	
-	private static BufferCombo loadSingleGeometryFile(byte[] streamContents) throws IOException {
+	private static VBOContents loadSingleGeometryFile(byte[] streamContents) throws IOException {
 		ByteBuffer buffer = ByteBuffer.wrap(streamContents);
 		buffer.order(ByteOrder.LITTLE_ENDIAN);
 
@@ -59,9 +59,9 @@ public class BrickReader {
 		}
 		
 		if(texturesEnabled) {
-			return new BufferCombo(vertices, normals, texCoords, indices);
+			return new VBOContents(vertices, normals, texCoords, indices);
 		} else {
-			return new BufferCombo(vertices, normals, indices);
+			return new VBOContents(vertices, normals, indices);
 		}
 	}
 }
