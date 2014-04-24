@@ -56,7 +56,7 @@ public class MaterialLoader {
 		int blue = Integer.parseInt(materialElement.getAttributeValue("Blue"));
 		int alpha = Integer.parseInt(materialElement.getAttributeValue("Alpha"));
 		MaterialType type = MaterialType.valueOf(materialElement.getAttributeValue("MaterialType"));
-		materials.put(materialID, new Material(red, green, blue, alpha, type));
+		materials.put(materialID, new Material(materialID, red, green, blue, alpha, type));
 	}
 
 }
