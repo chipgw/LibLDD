@@ -15,7 +15,7 @@ import nu.xom.Elements;
 import nu.xom.ParsingException;
 import nu.xom.ValidityException;
 
-public class MaterialLoader {
+public class MaterialReader {
 	
 	public static HashMap<Integer, Material> loadMaterials(File materialSrc) throws IOException {
 		if(!materialSrc.exists()) {

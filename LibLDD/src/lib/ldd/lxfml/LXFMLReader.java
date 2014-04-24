@@ -21,7 +21,7 @@ import lib.ldd.g.BrickReader;
 import lib.ldd.lif.DBFilePaths;
 import lib.ldd.lif.LIFFile;
 import lib.ldd.lif.LIFReader;
-import lib.ldd.materials.MaterialLoader;
+import lib.ldd.materials.MaterialReader;
 
 public class LXFMLReader {
 	private static final FloatBuffer transformationBuffer = FloatBuffer.allocate(16);
@@ -44,7 +44,7 @@ public class LXFMLReader {
 	private static Mesh parseLXFMLFile(Element rootElement, LIFReader dbLifReader) throws IOException {
 		HashMap<Material, GeometryWithMaterial> geometry = new HashMap<Material, GeometryWithMaterial>();
 		LIFFile materialsFile = dbLifReader.getFileAt(DBFilePaths.materialsFile);
-		HashMap<Integer, Material> materials = MaterialLoader.loadMaterials(dbLifReader.readInternalFile(materialsFile));
+		HashMap<Integer, Material> materials = MaterialReader.loadMaterials(dbLifReader.readInternalFile(materialsFile));
 		verifyFileVersion(rootElement);
 		Element bricksElement = rootElement.getFirstChildElement("Bricks");
 		Elements brickElements = bricksElement.getChildElements();
