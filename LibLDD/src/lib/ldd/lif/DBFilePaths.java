@@ -6,5 +6,7 @@ package lib.ldd.lif;
  *
  */
 public class DBFilePaths {
-
+	public static final String materialsFile = "/Materials.xml";
+	public static final String primitivesDirectory = "/Primitives/LOD0";
+	public static final String decorationsDirectory = "/Decorations";
 }
