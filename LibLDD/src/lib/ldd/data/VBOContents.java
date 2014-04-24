@@ -2,6 +2,9 @@ package lib.ldd.data;
 
 import java.util.Arrays;
 
+import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector4f;
+
 import lib.util.array.ArrayUtil;
 import lib.util.array.NumberUtil;
 
@@ -44,6 +47,36 @@ public class VBOContents {
 		} else {
 			return new VBOContents(combinedVertices, combinedNormals, combinedIndices);
 		}
+	}
+	
+	public VBOContents transform(Matrix4f transformation) {
+		float[] transformedVertices = transformArray(vertices, transformation);
+		Matrix4f normalMatrix = new Matrix4f(transformation);
+		//undo any translation transformations. Normals only have to be rotated.
+		normalMatrix.m30 = 0;
+		normalMatrix.m31 = 0;
+		normalMatrix.m32 = 0;
+		float[] transformedNormals = transformArray(normals, normalMatrix);
+		
+		if(texturesEnabled) {
+			return new VBOContents(transformedVertices, transformedNormals, textures, indices);
+		} else {
+			return new VBOContents(transformedVertices, transformedNormals, indices);
+		}
+	}
+	
+	private float[] transformArray(float[] points, Matrix4f transformation) {
+		float[] transformedPoints = new float[points.length];
+		Vector4f result = new Vector4f();
+		Vector4f vec = new Vector4f();
+		for(int i = 0; i < transformedPoints.length; i+=3) {
+			vec.set(points[i], points[i+1], points[i+2], 1f);
+			Matrix4f.transform(transformation, vec, result);
+			transformedPoints[i] = result.x;
+			transformedPoints[i+1] = result.y;
+			transformedPoints[i+2] = result.z;
+		}
+		return transformedPoints;
 	}
 
 }
