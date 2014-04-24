@@ -12,10 +12,21 @@ import lib.ldd.data.VBOContents;
 
 public class OBJSaver {
 	public static void save(Mesh mesh, File directory, String fileName) throws IOException {
+		if(!directory.isDirectory() || !directory.exists()) {
+			throw new IOException("OBJ files can only be saved to a directory.");
+		}
 		ArrayList<Material> usedMaterials = new ArrayList<Material>();
 		int indexOffset = 0;
-		PrintWriter objWriter = new PrintWriter(new File(directory, fileName + ".obj"));
-		PrintWriter mtlWriter = new PrintWriter(new File(directory, fileName + ".mtl"));
+		
+		File objFile = new File(directory, fileName + ".obj");
+		objFile.createNewFile();
+		File mtlFile = new File(directory, fileName + ".mtl");
+		mtlFile.createNewFile();
+		
+		PrintWriter objWriter = new PrintWriter(objFile);
+		PrintWriter mtlWriter = new PrintWriter(mtlFile);
+		
+		objWriter.println("mtllib " + mtlFile.getName());
 		
 		for(GeometryWithMaterial group : mesh.contents) {
 			usedMaterials.add(group.material);
@@ -59,7 +70,7 @@ public class OBJSaver {
 	
 	private static void writeMaterials(ArrayList<Material> usedMaterials, PrintWriter writer) {
 		for(Material material : usedMaterials) {
-			writer.println("newmtl " + material);
+			writer.println("newmtl " + material.id);
 			writer.println();
 			writer.println("Ka 0.000 0.000 0.000");
 			writer.println("Kd " + (((float) material.red) / 255f) + " " + (((float) material.green) / 255f) + " " + (((float) material.blue) / 255f));

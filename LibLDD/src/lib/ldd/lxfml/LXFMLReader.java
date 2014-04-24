@@ -56,10 +56,10 @@ public class LXFMLReader {
 				Element partElement = partElements.get(j);
 				GeometryWithMaterial combo = readBrick(partElement, dbLifReader, materials);
 				if(geometry.containsKey(combo.material)) {
-					geometry.put(combo.material, combo);
-				} else {
 					GeometryWithMaterial currentCombo = geometry.get(combo.material);
 					combo = currentCombo.merge(combo);
+					geometry.put(combo.material, combo);
+				} else {
 					geometry.put(combo.material, combo);
 				}
 			}
