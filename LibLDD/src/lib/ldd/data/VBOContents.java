@@ -16,8 +16,10 @@ public class VBOContents {
 	public final int[] indices;
 	
 	public final boolean texturesEnabled;
+	public final int vertexCount;
 
 	public VBOContents(float[] vertices, float[] normals, int[] indices) {
+		this.vertexCount = vertices.length / 3;
 		this.vertices = vertices;
 		this.normals = normals;
 		this.indices = indices;
@@ -26,6 +28,7 @@ public class VBOContents {
 	}
 	
 	public VBOContents(float[] vertices, float[] normals, float[] textures, int[] indices) {
+		this.vertexCount = vertices.length / 3;
 		this.vertices = vertices;
 		this.normals = normals;
 		this.indices = indices;
