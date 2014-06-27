@@ -24,8 +24,6 @@ import lib.ldd.lif.LIFReader;
 import lib.ldd.materials.MaterialReader;
 
 public class LXFMLReader {
-	private static final FloatBuffer transformationBuffer = FloatBuffer.allocate(16);
-	
 	public static Mesh readLXFMLFile(File lxfmlFile, LIFReader dbLifReader) throws IOException {
 		Builder builder = new Builder();
 		try {
@@ -102,6 +100,7 @@ public class LXFMLReader {
 			counter++;
 		}
 		matrix[15] = 1f;
+		FloatBuffer transformationBuffer = FloatBuffer.allocate(16);
 		transformationBuffer.put(matrix);
 		transformationBuffer.rewind();
 		transformation.load(transformationBuffer);
