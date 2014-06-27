@@ -30,7 +30,7 @@ public class BrickReader {
 		String partLocation = DBFilePaths.primitivesDirectory + "/" + partID + ".g";
 		LIFFile partFile = dbReader.getFileAt(partLocation);
 		VBOContents baseBrick = loadSingleGeometryFile(dbReader.readInternalFile(partFile));
-		int surfaceCounter = 0;
+		int surfaceCounter = 1;
 		partFile = dbReader.getFileAt(partLocation + surfaceCounter);
 		while(partFile != null) {
 			VBOContents surface = loadSingleGeometryFile(dbReader.readInternalFile(partFile));
