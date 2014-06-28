@@ -46,13 +46,14 @@ public class LXFMLReader {
 		verifyFileVersion(rootElement);
 		Element bricksElement = rootElement.getFirstChildElement("Bricks");
 		Elements brickElements = bricksElement.getChildElements();
+		RigidSystems rigidSystems = RigidSystems.read(rootElement.getFirstChildElement("RigidSystems"));
 		
 		for(int i = 0; i < brickElements.size(); i++) {
 			Element brickElement = brickElements.get(i);
 			Elements partElements = brickElement.getChildElements();
 			for(int j = 0; j < partElements.size(); j++) {
 				Element partElement = partElements.get(j);
-				GeometryWithMaterial combo = readBrick(partElement, dbLifReader, materials);
+				GeometryWithMaterial combo = readBrick(partElement, dbLifReader, materials, rigidSystems);
 				if(geometry.containsKey(combo.material)) {
 					GeometryWithMaterial currentCombo = geometry.get(combo.material);
 					combo = currentCombo.merge(combo);
@@ -68,7 +69,7 @@ public class LXFMLReader {
 		return new Mesh(allGeometry);
 	}
 	
-	private static GeometryWithMaterial readBrick(Element partElement, LIFReader dbLifReader, HashMap<Integer, Material> materials) throws IOException {
+	private static GeometryWithMaterial readBrick(Element partElement, LIFReader dbLifReader, HashMap<Integer, Material> materials, RigidSystems rigidSystems) throws IOException {
 		int partID = Integer.parseInt(partElement.getAttributeValue("designID"));
 		String materialName = partElement.getAttributeValue("materials");
 		//no support for multiple materials.
@@ -80,32 +81,16 @@ public class LXFMLReader {
 		int materialID = Integer.parseInt(materialName);
 		Material material = materials.get(materialID);
 		
-		Matrix4f transformation = readBrickTransformation(partElement);
+		Matrix4f transformation = Bone.readBrickTransformation(partElement);
 		VBOContents combo = BrickReader.readBrick(dbLifReader, partID);
-		combo = combo.transform(transformation);
-		return new GeometryWithMaterial(combo, material);
-	}
-
-	private static Matrix4f readBrickTransformation(Element partElement) {
-		Matrix4f transformation = new Matrix4f();
-		String transform = partElement.getFirstChildElement("Bone").getAttributeValue("transformation");
-		String[] parts = transform.split(",");
-		float[] matrix = new float[16];
-		int counter = 0;
-		for(int i = 0; i < parts.length; i++) {
-			matrix[counter] = Float.parseFloat(parts[i]);
-			if(i % 3 == 2) {
-				counter++;
-			}
-			counter++;
+		Elements boneElements = partElement.getChildElements("Bone");
+		//Single bone element = non-flex brick
+		if(boneElements.size() == 1) {
+			combo = combo.transform(transformation);
+		} else {
+			combo = FlexElement.transform(combo, boneElements, rigidSystems);
 		}
-		matrix[15] = 1f;
-		FloatBuffer transformationBuffer = FloatBuffer.allocate(16);
-		transformationBuffer.put(matrix);
-		transformationBuffer.rewind();
-		transformation.load(transformationBuffer);
-		transformationBuffer.clear();
-		return transformation;
+		return new GeometryWithMaterial(combo, material);
 	}
 
 	private static void checkLIF(LIFReader dbLifReader) {
