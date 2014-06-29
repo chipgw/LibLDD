@@ -2,15 +2,12 @@ package lib.ldd.lxfml;
 
 import java.nio.FloatBuffer;
 
-import nu.xom.Element;
-
 import org.lwjgl.util.vector.Matrix4f;
 
 public class Bone {
-	public static Matrix4f readBrickTransformation(Element partElement) {
+	public static Matrix4f readBrickTransformation(String transformationString) {
 		Matrix4f transformation = new Matrix4f();
-		String transform = partElement.getFirstChildElement("Bone").getAttributeValue("transformation");
-		String[] parts = transform.split(",");
+		String[] parts = transformationString.split(",");
 		float[] matrix = new float[16];
 		int counter = 0;
 		for(int i = 0; i < parts.length; i++) {

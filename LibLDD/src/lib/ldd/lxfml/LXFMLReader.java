@@ -81,11 +81,12 @@ public class LXFMLReader {
 		int materialID = Integer.parseInt(materialName);
 		Material material = materials.get(materialID);
 		
-		Matrix4f transformation = Bone.readBrickTransformation(partElement);
 		VBOContents combo = BrickReader.readBrick(dbLifReader, partID);
 		Elements boneElements = partElement.getChildElements("Bone");
 		//Single bone element = non-flex brick
 		if(boneElements.size() == 1) {
+			String transformationString = boneElements.get(0).getAttributeValue("transformation");
+			Matrix4f transformation = Bone.readBrickTransformation(transformationString);
 			combo = combo.transform(transformation);
 		} else {
 			combo = FlexElement.transform(combo, boneElements, rigidSystems);

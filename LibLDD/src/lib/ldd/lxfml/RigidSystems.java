@@ -43,6 +43,7 @@ public class RigidSystems {
 			int rigidID = Integer.parseInt(rigidElement.getAttributeValue("refID"));
 			String[] boneRefs = rigidElement.getAttributeValue("boneRefs").split(",");
 			for(String boneRef : boneRefs) {
+				System.out.println("Bone  " + boneRef + " -> " + rigidID);
 				boneRigidMap.put(Integer.parseInt(boneRef), rigidID);
 			}
 		}
@@ -51,12 +52,12 @@ public class RigidSystems {
 	private static void parseJointElements(Elements jointElements, HashMap<Integer, Vector3f> rigidMap) {
 		for(int i = 0; i < jointElements.size(); i++) {
 			Element joint = jointElements.get(i);
-			if(joint.getAttributeValue("type").equals("ball")) {
+			//if(joint.getAttributeValue("type").equals("ball")) {
 				Elements rigidRefElements = joint.getChildElements("RigidRef");
 				for(int j = 0; j < rigidRefElements.size(); j++) {
 					parseRigidRefElement(rigidRefElements.get(j), rigidMap);
 				}
-			}
+			//}
 		}
 	}
 
@@ -67,6 +68,7 @@ public class RigidSystems {
 			return;
 		}
 		int rigidID = Integer.parseInt(rigidRefElement.getAttributeValue("rigidRef"));
+		System.out.println("Joint " + rigidID + " -> " + linkBoundaryPlane);
 		rigidMap.put(rigidID, linkBoundaryPlane);
 	}
 
@@ -76,7 +78,7 @@ public class RigidSystems {
 				Float.parseFloat(components[0]),
 				Float.parseFloat(components[1]),
 				Float.parseFloat(components[2])
-				);
+		);
 	}
 
 }
