@@ -26,6 +26,7 @@ public class RigidSystems {
 		HashMap<Integer, Integer> boneRigidMap = new HashMap<Integer, Integer>();
 		HashMap<Integer, Vector3f> rigidPlaneMap = new HashMap<Integer, Vector3f>();
 		
+		
 		for(int i = 0; i < systemElements.size(); i++) {
 			parseRigidSystem(systemElements.get(i), boneRigidMap, rigidPlaneMap);
 		}
@@ -52,19 +53,16 @@ public class RigidSystems {
 	private static void parseJointElements(Elements jointElements, HashMap<Integer, Vector3f> rigidMap) {
 		for(int i = 0; i < jointElements.size(); i++) {
 			Element joint = jointElements.get(i);
-			//if(joint.getAttributeValue("type").equals("ball")) {
-				Elements rigidRefElements = joint.getChildElements("RigidRef");
-				for(int j = 0; j < rigidRefElements.size(); j++) {
-					parseRigidRefElement(rigidRefElements.get(j), rigidMap);
-				}
-			//}
+			Elements rigidRefElements = joint.getChildElements("RigidRef");
+			for(int j = 0; j < rigidRefElements.size(); j++) {
+				parseRigidRefElement(rigidRefElements.get(j), rigidMap);
+			}
 		}
 	}
 
 	private static void parseRigidRefElement(Element rigidRefElement, HashMap<Integer, Vector3f> rigidMap) {
 		Vector3f linkBoundaryPlane = readVector3f(rigidRefElement.getAttributeValue("t"));
-		//only store the nonzero variant
-		if((linkBoundaryPlane.x == 0) && (linkBoundaryPlane.y == 0) && (linkBoundaryPlane.z == 0)) {
+		if((rigidMap.containsKey(linkBoundaryPlane)) && (linkBoundaryPlane.length() < rigidMap.get(linkBoundaryPlane).length())) {
 			return;
 		}
 		int rigidID = Integer.parseInt(rigidRefElement.getAttributeValue("rigidRef"));

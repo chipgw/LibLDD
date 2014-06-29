@@ -23,13 +23,16 @@ public class FlexElement {
 		Matrix4f currentTransformationMatrix = new Matrix4f();
 		
 		for(int i = 0; i < combo.vertexCount; i++) {
-			currentCoordinate.x = combo.vertices[3*i + 0];
+			currentCoordinate.x = combo.vertices[3*i + 2];
 			currentCoordinate.y = combo.vertices[3*i + 1];
-			currentCoordinate.z = combo.vertices[3*i + 2];
+			currentCoordinate.z = combo.vertices[3*i + 0];
 			
-			currentNormal.x = combo.normals[3*i + 0];
+			System.out.println("-- iteration --");
+			System.out.println("Coordinate: " + currentCoordinate);
+			
+			currentNormal.x = combo.normals[3*i + 2];
 			currentNormal.y = combo.normals[3*i + 1];
-			currentNormal.z = combo.normals[3*i + 2];
+			currentNormal.z = combo.normals[3*i + 0];
 			
 			loadTransformationMatrixByCoordinate(boneLinkBoundaries, transformationMatrices, currentTransformationMatrix, currentCoordinate);
 			
@@ -56,9 +59,12 @@ public class FlexElement {
 	private static void loadTransformationMatrixByCoordinate(Vector3f[] boneLinkBoundaries, Matrix4f[] transformationMatrices, Matrix4f currentTransformationMatrix, Vector4f currentCoordinate) {
 		for(int i = boneLinkBoundaries.length - 1; i >= 0; i--) {
 			Vector3f boundary = boneLinkBoundaries[i];
-			if(	(currentCoordinate.x <= boundary.x) && 
-				(currentCoordinate.y <= boundary.y) &&
-				(currentCoordinate.z <= boundary.z)) {
+			if(Math.abs(currentCoordinate.x) >= Math.abs(boundary.x)) {
+				currentCoordinate.x += boundary.x;
+				currentCoordinate.y += boundary.y;
+				currentCoordinate.z += boundary.z;
+				System.out.println("= " + currentCoordinate);
+				System.out.println("Loaded matrix " + i);
 				Matrix4f.load(transformationMatrices[i], currentTransformationMatrix);
 				return;
 			}
