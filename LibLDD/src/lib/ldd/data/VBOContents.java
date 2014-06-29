@@ -6,7 +6,6 @@ import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector4f;
 
 import lib.util.array.ArrayUtil;
-import lib.util.array.NumberUtil;
 
 public class VBOContents {
 
@@ -42,7 +41,7 @@ public class VBOContents {
 		float[] combinedTextureCoords = ArrayUtil.concat(this.textures, part.textures);
 		int highestIndex = indices.length == 0 ? 0 : ArrayUtil.max(indices);
 		int[] partIndices = Arrays.copyOf(part.indices, part.indices.length);
-		NumberUtil.increment(partIndices, highestIndex + 1);
+		ArrayUtil.increment(partIndices, highestIndex + 1);
 		int[] combinedIndices = ArrayUtil.concat(this.indices, partIndices);
 		
 		if(this.texturesEnabled && part.texturesEnabled) {

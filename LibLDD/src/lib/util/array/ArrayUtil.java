@@ -33,5 +33,11 @@ public class ArrayUtil {
 		}
 		return max;
 	}
+	
+	public static void increment(int[] array, int amount) {
+		for(int i = 0; i < array.length; i++) {
+			array[i] += amount;
+		}
+	}
 
 }
