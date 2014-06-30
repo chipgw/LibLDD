@@ -89,19 +89,33 @@ public class FlexElement {
 	}
 	
 	private static void loadTransformationMatrixByCoordinate(Vector3f[] boneLinkBoundaries, Matrix4f[] transformationMatrices, Matrix4f currentTransformationMatrix, Vector4f currentCoordinate) {
-		int i = 0;
+		int i = transformationMatrices.length - 2;
 		Vector3f boundary = null;
-		while(i < boneLinkBoundaries.length) {
+		while(i >= 0) {
 			boundary = boneLinkBoundaries[i];
-			//System.out.println("Boundary["+i+"]: " + boundary);
-			if(currentCoordinate.x <= boundary.x) {
+//			System.out.println("Boundary["+i+"]: " + boundary + " vs " + currentCoordinate);
+			if(currentCoordinate.x >= boundary.x) {
 				break;
 			}
+			i--;
+		}
+		if(boneLinkBoundaries[0].x == 0) {
+			//LDD saves some boundaries at 0, 0, 0.
+			//For some reason they originate at a hinge.
+			//these still bug out at the moment.
+			i--;
+		}
+		if(i > 0) {
+			currentCoordinate.x -= boundary.x;				
+			i++;
+		} else if(boundary.x < currentCoordinate.x){ // i == 0 -> boundary == boneLinkBoundaries[0]
+			currentCoordinate.x -= boundary.x;
 			i++;
 		}
-		currentCoordinate.x -= boundary.x;
+		
 		//The final transformation matrix should not be used as it points to the connection point of the part
 		i = Math.min(transformationMatrices.length - 2, i);
+		i = Math.max(0, i);
 //		System.out.println("Loaded matrix " + i);
 		Matrix4f.load(transformationMatrices[i], currentTransformationMatrix);
 		return;

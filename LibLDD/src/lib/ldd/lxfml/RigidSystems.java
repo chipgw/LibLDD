@@ -57,6 +57,7 @@ public class RigidSystems {
 				parseRigidRefElement(rigidRefElements.get(j), rigidMap);
 			}
 		}
+		
 	}
 
 	private static void parseRigidRefElement(Element rigidRefElement, HashMap<Integer, Vector3f> rigidMap) {
