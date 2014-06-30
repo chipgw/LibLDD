@@ -44,7 +44,6 @@ public class RigidSystems {
 			int rigidID = Integer.parseInt(rigidElement.getAttributeValue("refID"));
 			String[] boneRefs = rigidElement.getAttributeValue("boneRefs").split(",");
 			for(String boneRef : boneRefs) {
-				System.out.println("Bone  " + boneRef + " -> " + rigidID);
 				boneRigidMap.put(Integer.parseInt(boneRef), rigidID);
 			}
 		}
@@ -66,7 +65,6 @@ public class RigidSystems {
 			return;
 		}
 		int rigidID = Integer.parseInt(rigidRefElement.getAttributeValue("rigidRef"));
-		System.out.println("Joint " + rigidID + " -> " + linkBoundaryPlane);
 		rigidMap.put(rigidID, linkBoundaryPlane);
 	}
 

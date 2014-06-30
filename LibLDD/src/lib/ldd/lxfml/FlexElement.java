@@ -1,5 +1,7 @@
 package lib.ldd.lxfml;
 
+import java.util.Arrays;
+
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
@@ -22,17 +24,31 @@ public class FlexElement {
 		Vector4f currentNormal = new Vector4f(0, 0, 0, 1);
 		Matrix4f currentTransformationMatrix = new Matrix4f();
 		
+		float minX = Float.MAX_VALUE;
+		float maxX = Float.MIN_VALUE;
+		float minY = Float.MAX_VALUE;
+		float maxY = Float.MIN_VALUE;
+		float minZ = Float.MAX_VALUE;
+		float maxZ = Float.MIN_VALUE;
+		
 		for(int i = 0; i < combo.vertexCount; i++) {
-			currentCoordinate.x = combo.vertices[3*i + 2];
+			currentCoordinate.x = combo.vertices[3*i + 0];
 			currentCoordinate.y = combo.vertices[3*i + 1];
-			currentCoordinate.z = combo.vertices[3*i + 0];
+			currentCoordinate.z = combo.vertices[3*i + 2];
 			
-			System.out.println("-- iteration --");
-			System.out.println("Coordinate: " + currentCoordinate);
+			//System.out.println("-- iteration --");
+//			System.out.println("Coordinate: " + currentCoordinate);
 			
-			currentNormal.x = combo.normals[3*i + 2];
+			currentNormal.x = combo.normals[3*i + 0];
 			currentNormal.y = combo.normals[3*i + 1];
-			currentNormal.z = combo.normals[3*i + 0];
+			currentNormal.z = combo.normals[3*i + 2];
+			
+			minX = Math.min(minX, currentCoordinate.x);
+			minY = Math.min(minY, currentCoordinate.y);
+			minZ = Math.min(minZ, currentCoordinate.z);
+			maxX = Math.max(maxX, currentCoordinate.x);
+			maxY = Math.max(maxY, currentCoordinate.y);
+			maxZ = Math.max(maxZ, currentCoordinate.z);
 			
 			loadTransformationMatrixByCoordinate(boneLinkBoundaries, transformationMatrices, currentTransformationMatrix, currentCoordinate);
 			
@@ -53,22 +69,33 @@ public class FlexElement {
 			normals[3*i + 1] = currentNormal.y;
 			normals[3*i + 2] = currentNormal.z;
 		}
+		System.out.println(minX);
+		System.out.println(maxX);
+		System.out.println(minY);
+		System.out.println(maxY);
+		System.out.println(minZ);
+		System.out.println(maxZ);
+		
 		return new VBOContents(vertices, normals, combo.indices);
 	}
 	
 	private static void loadTransformationMatrixByCoordinate(Vector3f[] boneLinkBoundaries, Matrix4f[] transformationMatrices, Matrix4f currentTransformationMatrix, Vector4f currentCoordinate) {
-		for(int i = boneLinkBoundaries.length - 1; i >= 0; i--) {
-			Vector3f boundary = boneLinkBoundaries[i];
-			if(Math.abs(currentCoordinate.x) >= Math.abs(boundary.x)) {
-				currentCoordinate.x += boundary.x;
-				currentCoordinate.y += boundary.y;
-				currentCoordinate.z += boundary.z;
-				System.out.println("= " + currentCoordinate);
-				System.out.println("Loaded matrix " + i);
-				Matrix4f.load(transformationMatrices[i], currentTransformationMatrix);
-				return;
+		int i = 0;
+		Vector3f boundary = null;
+		while(i < boneLinkBoundaries.length) {
+			boundary = boneLinkBoundaries[i];
+			//System.out.println("Boundary["+i+"]: " + boundary);
+			if(currentCoordinate.length() <= boundary.length()) {
+				break;
 			}
+			i++;
 		}
+		currentCoordinate.z += boundary.length();
+		//The final transformation matrix should not be used as it points to the connection point of the part
+		i = Math.min(transformationMatrices.length - 2, i);
+//		System.out.println("Loaded matrix " + i);
+		Matrix4f.load(transformationMatrices[i], currentTransformationMatrix);
+		return;
 	}
 
 	private static Vector3f[] readBoneBoundaries(Elements boneElements, RigidSystems rigidSystems) {
@@ -86,10 +113,14 @@ public class FlexElement {
 
 	private static Matrix4f[] readTransformationMatrices(Elements boneElements) {
 		Matrix4f[] matrices = new Matrix4f[boneElements.size()];
+		Vector4f zero = new Vector4f(0, 0, 0, 1);
+		Vector4f transformed = new Vector4f(0, 0, 0, 1);
 		for(int i = 0; i < boneElements.size(); i++) {
 			Element boneElement = boneElements.get(i);
 			Matrix4f transformationMatrix = Bone.readBrickTransformation(boneElement.getAttributeValue("transformation"));
 			matrices[i] = transformationMatrix;
+			Matrix4f.transform(transformationMatrix, zero, transformed);
+			System.out.println(i + ": " + transformed);
 		}
 		return matrices;
 	}
