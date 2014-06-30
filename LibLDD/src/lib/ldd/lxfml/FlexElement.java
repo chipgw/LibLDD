@@ -31,10 +31,15 @@ public class FlexElement {
 		float minZ = Float.MAX_VALUE;
 		float maxZ = Float.MIN_VALUE;
 		
+		Matrix4f rotationMatrix = new Matrix4f();
+		rotationMatrix.setIdentity();
+		rotationMatrix.rotate((float)Math.toRadians(-90), new Vector3f(0, 1, 0));
+		
 		for(int i = 0; i < combo.vertexCount; i++) {
 			currentCoordinate.x = combo.vertices[3*i + 0];
 			currentCoordinate.y = combo.vertices[3*i + 1];
 			currentCoordinate.z = combo.vertices[3*i + 2];
+			
 			
 			//System.out.println("-- iteration --");
 //			System.out.println("Coordinate: " + currentCoordinate);
@@ -42,6 +47,10 @@ public class FlexElement {
 			currentNormal.x = combo.normals[3*i + 0];
 			currentNormal.y = combo.normals[3*i + 1];
 			currentNormal.z = combo.normals[3*i + 2];
+			
+			//ensure part is pointed in the positive x-axis direction
+			Matrix4f.transform(rotationMatrix, currentCoordinate, currentCoordinate);
+			Matrix4f.transform(rotationMatrix, currentNormal, currentNormal);
 			
 			minX = Math.min(minX, currentCoordinate.x);
 			minY = Math.min(minY, currentCoordinate.y);
@@ -69,12 +78,12 @@ public class FlexElement {
 			normals[3*i + 1] = currentNormal.y;
 			normals[3*i + 2] = currentNormal.z;
 		}
-		System.out.println(minX);
-		System.out.println(maxX);
-		System.out.println(minY);
-		System.out.println(maxY);
-		System.out.println(minZ);
-		System.out.println(maxZ);
+//		System.out.println(minX);
+//		System.out.println(maxX);
+//		System.out.println(minY);
+//		System.out.println(maxY);
+//		System.out.println(minZ);
+//		System.out.println(maxZ);
 		
 		return new VBOContents(vertices, normals, combo.indices);
 	}
@@ -85,12 +94,12 @@ public class FlexElement {
 		while(i < boneLinkBoundaries.length) {
 			boundary = boneLinkBoundaries[i];
 			//System.out.println("Boundary["+i+"]: " + boundary);
-			if(currentCoordinate.length() <= boundary.length()) {
+			if(currentCoordinate.x <= boundary.x) {
 				break;
 			}
 			i++;
 		}
-		currentCoordinate.z += boundary.length();
+		currentCoordinate.x -= boundary.x;
 		//The final transformation matrix should not be used as it points to the connection point of the part
 		i = Math.min(transformationMatrices.length - 2, i);
 //		System.out.println("Loaded matrix " + i);
@@ -113,14 +122,10 @@ public class FlexElement {
 
 	private static Matrix4f[] readTransformationMatrices(Elements boneElements) {
 		Matrix4f[] matrices = new Matrix4f[boneElements.size()];
-		Vector4f zero = new Vector4f(0, 0, 0, 1);
-		Vector4f transformed = new Vector4f(0, 0, 0, 1);
 		for(int i = 0; i < boneElements.size(); i++) {
 			Element boneElement = boneElements.get(i);
 			Matrix4f transformationMatrix = Bone.readBrickTransformation(boneElement.getAttributeValue("transformation"));
 			matrices[i] = transformationMatrix;
-			Matrix4f.transform(transformationMatrix, zero, transformed);
-			System.out.println(i + ": " + transformed);
 		}
 		return matrices;
 	}
