@@ -1,5 +1,6 @@
 package lib.ldd.lxfml;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.lwjgl.util.vector.Matrix4f;
@@ -7,15 +8,18 @@ import org.lwjgl.util.vector.Vector3f;
 import org.lwjgl.util.vector.Vector4f;
 
 import lib.ldd.data.VBOContents;
+import lib.ldd.lif.LIFReader;
 import nu.xom.Element;
 import nu.xom.Elements;
+import nu.xom.ParsingException;
+import nu.xom.ValidityException;
 
 public class FlexElement {
 
 	//Assumption: flexible parts have no textures
-	public static VBOContents transform(VBOContents combo, Elements boneElements, RigidSystems rigidSystems) {
-		Vector3f[] boneLinkBoundaries = readBoneBoundaries(boneElements, rigidSystems);
-		Matrix4f[] transformationMatrices = readTransformationMatrices(boneElements);
+	public static VBOContents transform(VBOContents combo, Elements boneElements, int partID, LIFReader dbLifReader) throws ValidityException, IOException, ParsingException {
+		Vector3f[] boneLinkBoundaries = Brick.readFlexBoneLinkBoundaries(partID, dbLifReader);
+		Matrix4f[] transformationMatrices = readTransformationMatrices(boneElements, boneLinkBoundaries.length);
 		
 		float[] vertices = new float[combo.vertices.length];
 		float[] normals = new float[combo.normals.length];
@@ -99,44 +103,22 @@ public class FlexElement {
 			}
 			i--;
 		}
-		if(boneLinkBoundaries[0].x == 0) {
-			//LDD saves some boundaries at 0, 0, 0.
-			//For some reason they originate at a hinge.
-			//these still bug out at the moment.
-			i--;
-		}
-		if(i > 0) {
+		if((i > 0) || (boundary.x < currentCoordinate.x)) {
 			currentCoordinate.x -= boundary.x;				
-			i++;
-		} else if(boundary.x < currentCoordinate.x){ // i == 0 -> boundary == boneLinkBoundaries[0]
-			currentCoordinate.x -= boundary.x;
 			i++;
 		}
 		
 		//The final transformation matrix should not be used as it points to the connection point of the part
-		i = Math.min(transformationMatrices.length - 2, i);
+		i = Math.min(transformationMatrices.length - 1, i);
 		i = Math.max(0, i);
 //		System.out.println("Loaded matrix " + i);
 		Matrix4f.load(transformationMatrices[i], currentTransformationMatrix);
 		return;
 	}
 
-	private static Vector3f[] readBoneBoundaries(Elements boneElements, RigidSystems rigidSystems) {
-		Vector3f[] boundaries = new Vector3f[boneElements.size()];
-		Vector3f currentBoundary = new Vector3f(0, 0, 0);
-		for(int i = 0; i < boneElements.size(); i++) {
-			Element boneElement = boneElements.get(i);
-			int boneID = Integer.parseInt(boneElement.getAttributeValue("refID"));
-			Vector3f boundary = rigidSystems.getPlaneVector(boneID);
-			Vector3f.add(currentBoundary, boundary, currentBoundary);
-			boundaries[i] = new Vector3f(currentBoundary);
-		}
-		return boundaries;
-	}
-
-	private static Matrix4f[] readTransformationMatrices(Elements boneElements) {
-		Matrix4f[] matrices = new Matrix4f[boneElements.size()];
-		for(int i = 0; i < boneElements.size(); i++) {
+	private static Matrix4f[] readTransformationMatrices(Elements boneElements, int count) {
+		Matrix4f[] matrices = new Matrix4f[count];
+		for(int i = 0; i < count; i++) {
 			Element boneElement = boneElements.get(i);
 			Matrix4f transformationMatrix = Bone.readBrickTransformation(boneElement.getAttributeValue("transformation"));
 			matrices[i] = transformationMatrix;

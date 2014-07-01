@@ -27,7 +27,7 @@ public class BrickReader {
 	}
 	
 	public static VBOContents readBrick(LIFReader dbReader, int partID) throws IOException {
-		String partLocation = DBFilePaths.primitivesDirectory + "/" + partID + ".g";
+		String partLocation = DBFilePaths.primitiveGeometryDirectory + "/" + partID + ".g";
 		LIFFile partFile = dbReader.getFileAt(partLocation);
 		VBOContents baseBrick = loadSingleGeometryFile(dbReader.readInternalFile(partFile));
 		int surfaceCounter = 1;

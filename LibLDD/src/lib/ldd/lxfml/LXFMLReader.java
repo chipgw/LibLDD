@@ -14,6 +14,8 @@ import nu.xom.Builder;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.Elements;
+import nu.xom.ParsingException;
+import nu.xom.ValidityException;
 import lib.ldd.data.GeometryWithMaterial;
 import lib.ldd.data.Material;
 import lib.ldd.data.Mesh;
@@ -40,7 +42,7 @@ public class LXFMLReader {
 		}
 	}
 	
-	private static Mesh parseLXFMLFile(Element rootElement, LIFReader dbLifReader) throws IOException {
+	private static Mesh parseLXFMLFile(Element rootElement, LIFReader dbLifReader) throws IOException, ValidityException, ParsingException {
 		HashMap<Material, GeometryWithMaterial> geometry = new HashMap<Material, GeometryWithMaterial>();
 		LIFFile materialsFile = dbLifReader.getFileAt(DBFilePaths.materialsFile);
 		HashMap<Integer, Material> materials = MaterialReader.loadMaterials(dbLifReader.readInternalFile(materialsFile));
@@ -69,7 +71,7 @@ public class LXFMLReader {
 		return new Mesh(allGeometry);
 	}
 	
-	private static GeometryWithMaterial readBrick(Element partElement, LIFReader dbLifReader, HashMap<Integer, Material> materials) throws IOException {
+	private static GeometryWithMaterial readBrick(Element partElement, LIFReader dbLifReader, HashMap<Integer, Material> materials) throws IOException, ValidityException, ParsingException {
 		int partID = Integer.parseInt(partElement.getAttributeValue("designID"));
 		String materialName = partElement.getAttributeValue("materials");
 		//no support for multiple materials.
