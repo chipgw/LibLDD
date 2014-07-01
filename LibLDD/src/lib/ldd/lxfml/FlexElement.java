@@ -114,7 +114,6 @@ public class FlexElement {
 			i++;
 		}
 		
-		//The final transformation matrix should not be used as it points to the connection point of the part
 		i = Math.min(transformationMatrices.length - 1, i);
 		i = Math.max(0, i);
 		Matrix4f.load(transformationMatrices[i], currentTransformationMatrix);
