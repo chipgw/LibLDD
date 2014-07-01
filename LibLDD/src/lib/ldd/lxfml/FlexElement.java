@@ -2,6 +2,7 @@ package lib.ldd.lxfml;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
@@ -16,9 +17,11 @@ import nu.xom.ValidityException;
 
 public class FlexElement {
 
+	private static final HashMap<Integer, Vector3f[]> boneBoundaryCache = new HashMap<Integer, Vector3f[]>();
+	
 	//Assumption: flexible parts have no textures
 	public static VBOContents transform(VBOContents combo, Elements boneElements, int partID, LIFReader dbLifReader) throws ValidityException, IOException, ParsingException {
-		Vector3f[] boneLinkBoundaries = Brick.readFlexBoneLinkBoundaries(partID, dbLifReader);
+		Vector3f[] boneLinkBoundaries = readBoneBoundaries(partID, dbLifReader);
 		Matrix4f[] transformationMatrices = readTransformationMatrices(boneElements, boneLinkBoundaries.length);
 		
 		float[] vertices = new float[combo.vertices.length];
@@ -80,6 +83,20 @@ public class FlexElement {
 		}
 		
 		return new VBOContents(vertices, normals, combo.indices);
+	}
+
+	private static Vector3f[] readBoneBoundaries(int partID, LIFReader dbLifReader) throws IOException, ValidityException, ParsingException {
+		Vector3f[] boneLinkBoundaries = null;
+		//Better to have a thread wait for another part to be parsed than to load the same part twice.
+		synchronized(boneBoundaryCache) {
+			if(boneBoundaryCache.containsKey(partID)) {
+				boneLinkBoundaries = boneBoundaryCache.get(partID);
+			} else {
+				boneLinkBoundaries = Brick.readFlexBoneLinkBoundaries(partID, dbLifReader);
+				boneBoundaryCache.put(partID, boneLinkBoundaries);
+			}
+		}
+		return boneLinkBoundaries;
 	}
 	
 	private static void loadTransformationMatrixByCoordinate(Vector3f[] boneLinkBoundaries, Matrix4f[] transformationMatrices, Matrix4f currentTransformationMatrix, Vector4f currentCoordinate) {
