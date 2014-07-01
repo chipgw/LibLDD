@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
 import nu.xom.Builder;
 import nu.xom.Document;
@@ -46,14 +47,13 @@ public class LXFMLReader {
 		verifyFileVersion(rootElement);
 		Element bricksElement = rootElement.getFirstChildElement("Bricks");
 		Elements brickElements = bricksElement.getChildElements();
-		RigidSystems rigidSystems = RigidSystems.read(rootElement.getFirstChildElement("RigidSystems"));
 		
 		for(int i = 0; i < brickElements.size(); i++) {
 			Element brickElement = brickElements.get(i);
 			Elements partElements = brickElement.getChildElements();
 			for(int j = 0; j < partElements.size(); j++) {
 				Element partElement = partElements.get(j);
-				GeometryWithMaterial combo = readBrick(partElement, dbLifReader, materials, rigidSystems);
+				GeometryWithMaterial combo = readBrick(partElement, dbLifReader, materials);
 				if(geometry.containsKey(combo.material)) {
 					GeometryWithMaterial currentCombo = geometry.get(combo.material);
 					combo = currentCombo.merge(combo);
@@ -69,7 +69,7 @@ public class LXFMLReader {
 		return new Mesh(allGeometry);
 	}
 	
-	private static GeometryWithMaterial readBrick(Element partElement, LIFReader dbLifReader, HashMap<Integer, Material> materials, RigidSystems rigidSystems) throws IOException {
+	private static GeometryWithMaterial readBrick(Element partElement, LIFReader dbLifReader, HashMap<Integer, Material> materials) throws IOException {
 		int partID = Integer.parseInt(partElement.getAttributeValue("designID"));
 		String materialName = partElement.getAttributeValue("materials");
 		//no support for multiple materials.
@@ -89,7 +89,7 @@ public class LXFMLReader {
 			Matrix4f transformation = Bone.readBrickTransformation(transformationString);
 			combo = combo.transform(transformation);
 		} else {
-			combo = FlexElement.transform(combo, boneElements, rigidSystems);
+			combo = FlexElement.transform(combo, boneElements, partID, dbLifReader);
 		}
 		return new GeometryWithMaterial(combo, material);
 	}
