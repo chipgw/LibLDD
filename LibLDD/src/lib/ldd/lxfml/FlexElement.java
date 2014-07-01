@@ -44,10 +44,6 @@ public class FlexElement {
 			currentCoordinate.y = combo.vertices[3*i + 1];
 			currentCoordinate.z = combo.vertices[3*i + 2];
 			
-			
-			//System.out.println("-- iteration --");
-//			System.out.println("Coordinate: " + currentCoordinate);
-			
 			currentNormal.x = combo.normals[3*i + 0];
 			currentNormal.y = combo.normals[3*i + 1];
 			currentNormal.z = combo.normals[3*i + 2];
@@ -82,12 +78,6 @@ public class FlexElement {
 			normals[3*i + 1] = currentNormal.y;
 			normals[3*i + 2] = currentNormal.z;
 		}
-//		System.out.println(minX);
-//		System.out.println(maxX);
-//		System.out.println(minY);
-//		System.out.println(maxY);
-//		System.out.println(minZ);
-//		System.out.println(maxZ);
 		
 		return new VBOContents(vertices, normals, combo.indices);
 	}
@@ -97,7 +87,6 @@ public class FlexElement {
 		Vector3f boundary = null;
 		while(i >= 0) {
 			boundary = boneLinkBoundaries[i];
-//			System.out.println("Boundary["+i+"]: " + boundary + " vs " + currentCoordinate);
 			if(currentCoordinate.x >= boundary.x) {
 				break;
 			}
@@ -111,7 +100,6 @@ public class FlexElement {
 		//The final transformation matrix should not be used as it points to the connection point of the part
 		i = Math.min(transformationMatrices.length - 1, i);
 		i = Math.max(0, i);
-//		System.out.println("Loaded matrix " + i);
 		Matrix4f.load(transformationMatrices[i], currentTransformationMatrix);
 		return;
 	}
