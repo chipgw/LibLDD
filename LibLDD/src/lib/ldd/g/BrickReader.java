@@ -6,6 +6,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import lib.ldd.data.VBOContents;
 import lib.ldd.lif.DBFilePaths;
@@ -57,20 +59,20 @@ public class BrickReader {
 		float[] texCoords = new float[2*vertexCount];
 		float[] normals = new float[3*vertexCount];
 		
-		for(int i = 0; i < 3*vertexCount; i++) {
-			vertices[i] = buffer.getFloat();
-		}
-		for(int i = 0; i < 3*vertexCount; i++) {
-			normals[i] = buffer.getFloat();
-		}
+		FloatBuffer floatBuffer = buffer.asFloatBuffer();
+		IntBuffer intBuffer = buffer.asIntBuffer();
+		
+		floatBuffer.get(vertices);
+		floatBuffer.get(normals);
 		if(texturesEnabled) {
-			for(int i = 0; i < 2*vertexCount; i++) {
-				texCoords[i] = buffer.getFloat();
-			}
+			floatBuffer.get(texCoords);
 		}
-		for(int i = 0; i < indexCount; i++) {
-			indices[i] = buffer.getInt();
-		}
+		
+		int currentPosition = intBuffer.position();
+		int skipDistance = (texturesEnabled ? 8 : 6) * vertexCount;
+		intBuffer.position(currentPosition + skipDistance);
+		
+		intBuffer.get(indices);
 		
 		if(texturesEnabled) {
 			return new VBOContents(vertices, normals, texCoords, indices);
