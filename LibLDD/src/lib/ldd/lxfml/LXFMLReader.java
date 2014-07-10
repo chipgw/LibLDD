@@ -32,6 +32,7 @@ public class LXFMLReader {
 	public static Mesh readLXFMLFile(File lxfmlFile, LIFReader dbLifReader) throws IOException {
 			FileInputStream stream = new FileInputStream(lxfmlFile);
 			byte[] fileContents = new byte[(int) lxfmlFile.length()];
+			stream.read(fileContents);
 			stream.close();
 			return readLXFMLFileContents(new String(fileContents), dbLifReader);
 	}
