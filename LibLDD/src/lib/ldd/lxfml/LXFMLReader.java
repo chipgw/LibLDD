@@ -3,6 +3,7 @@ package lib.ldd.lxfml;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.FloatBuffer;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,11 +29,20 @@ import lib.ldd.materials.MaterialReader;
 
 public class LXFMLReader {
 	public static Mesh readLXFMLFile(File lxfmlFile, LIFReader dbLifReader) throws IOException {
-		Builder builder = new Builder();
-		try {
 			FileInputStream stream = new FileInputStream(lxfmlFile);
-			Document doc = builder.build(stream);
+			byte[] fileContents = new byte[(int) lxfmlFile.length()];
 			stream.close();
+			return readLXFMLFileContents(new String(fileContents), dbLifReader);
+	}
+	
+	public static Mesh readLXFMLFile(String lxfmlFileContents, LIFReader dbLifReader) throws IOException {
+		return readLXFMLFileContents(lxfmlFileContents, dbLifReader);
+	}
+	
+	private static Mesh readLXFMLFileContents(String fileContents, LIFReader dbLifReader) throws IOException {
+		try {
+			Builder builder = new Builder();
+			Document doc = builder.build(fileContents);
 			Element rootElement = doc.getRootElement();
 			checkLIF(dbLifReader);
 			verifyFileVersion(rootElement);
