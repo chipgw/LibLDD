@@ -31,7 +31,11 @@ public class BrickReader {
 	public static VBOContents readBrick(LIFReader dbReader, int partID) throws IOException {
 		String partLocation = DBFilePaths.primitiveGeometryDirectory + "/" + partID + ".g";
 		LIFFile partFile = dbReader.getFileAt(partLocation);
-		VBOContents baseBrick = loadSingleGeometryFile(dbReader.readInternalFile(partFile));
+		if(partFile == null) {
+			throw new IOException("Brick " + partID + " appears to be missing in Assets.lif");
+		}
+		byte[] internalFile = dbReader.readInternalFile(partFile);
+		VBOContents baseBrick = loadSingleGeometryFile(internalFile);
 		int surfaceCounter = 1;
 		partFile = dbReader.getFileAt(partLocation + surfaceCounter);
 		while(partFile != null) {

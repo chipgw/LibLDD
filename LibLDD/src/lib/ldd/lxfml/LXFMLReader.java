@@ -1,5 +1,6 @@
 package lib.ldd.lxfml;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class LXFMLReader {
 	private static Mesh readLXFMLFileContents(String fileContents, LIFReader dbLifReader) throws IOException {
 		try {
 			Builder builder = new Builder();
-			Document doc = builder.build(fileContents);
+			Document doc = builder.build(new ByteArrayInputStream(fileContents.getBytes()));
 			Element rootElement = doc.getRootElement();
 			checkLIF(dbLifReader);
 			verifyFileVersion(rootElement);
