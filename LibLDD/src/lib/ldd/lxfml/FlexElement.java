@@ -1,7 +1,6 @@
 package lib.ldd.lxfml;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import org.lwjgl.util.vector.Matrix4f;

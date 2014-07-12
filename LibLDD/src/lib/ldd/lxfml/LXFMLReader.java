@@ -4,13 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.FloatBuffer;
 import java.util.Collection;
 import java.util.HashMap;
 
 import org.lwjgl.util.vector.Matrix4f;
-import org.lwjgl.util.vector.Vector3f;
 
 import nu.xom.Builder;
 import nu.xom.Document;
