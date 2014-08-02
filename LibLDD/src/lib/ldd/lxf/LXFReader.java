@@ -16,12 +16,11 @@ public class LXFReader {
 		try {
 			ZipFile zipFile = new ZipFile(lxfFile);
 			ZipEntry lxfmlEntry = zipFile.getEntry("IMAGE100.LXFML");
-			byte[] lxfmlFile = new byte[(int) lxfmlEntry.getSize()];
 			InputStream stream = zipFile.getInputStream(lxfmlEntry);
-			stream.read(lxfmlFile);
+			Mesh returnValue = LXFMLReader.readLXFMLFile(stream, dbLifReader);
 			stream.close();
 			zipFile.close();
-			return LXFMLReader.readLXFMLFile(new String(lxfmlFile), dbLifReader);
+			return returnValue;
 		} catch(ZipException e) {
 			throw new IOException(e);
 		}

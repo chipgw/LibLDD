@@ -1,9 +1,9 @@
 package lib.ldd.lxfml;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -28,20 +28,20 @@ import lib.ldd.materials.MaterialReader;
 public class LXFMLReader {
 	public static Mesh readLXFMLFile(File lxfmlFile, LIFReader dbLifReader) throws IOException {
 			FileInputStream stream = new FileInputStream(lxfmlFile);
-			byte[] fileContents = new byte[(int) lxfmlFile.length()];
-			stream.read(fileContents);
+			
+			Mesh returnValue = readLXFMLFileContents(stream, dbLifReader);
 			stream.close();
-			return readLXFMLFileContents(new String(fileContents), dbLifReader);
+			return returnValue;
 	}
 	
-	public static Mesh readLXFMLFile(String lxfmlFileContents, LIFReader dbLifReader) throws IOException {
-		return readLXFMLFileContents(lxfmlFileContents, dbLifReader);
+	public static Mesh readLXFMLFile(InputStream lxfmlFileStream, LIFReader dbLifReader) throws IOException {
+		return readLXFMLFileContents(lxfmlFileStream, dbLifReader);
 	}
 	
-	private static Mesh readLXFMLFileContents(String fileContents, LIFReader dbLifReader) throws IOException {
+	private static Mesh readLXFMLFileContents(InputStream fileStream, LIFReader dbLifReader) throws IOException {
 		try {
 			Builder builder = new Builder();
-			Document doc = builder.build(new ByteArrayInputStream(fileContents.getBytes()));
+			Document doc = builder.build(fileStream);
 			Element rootElement = doc.getRootElement();
 			checkLIF(dbLifReader);
 			verifyFileVersion(rootElement);
