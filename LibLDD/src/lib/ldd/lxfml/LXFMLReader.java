@@ -27,11 +27,11 @@ import lib.ldd.materials.MaterialReader;
 
 public class LXFMLReader {
 	public static Mesh readLXFMLFile(File lxfmlFile, LIFReader dbLifReader) throws IOException {
-			FileInputStream stream = new FileInputStream(lxfmlFile);
-			
-			Mesh returnValue = readLXFMLFileContents(stream, dbLifReader);
-			stream.close();
-			return returnValue;
+		FileInputStream stream = new FileInputStream(lxfmlFile);
+		
+		Mesh lxfMesh = readLXFMLFileContents(stream, dbLifReader);
+		stream.close();
+		return lxfMesh;
 	}
 	
 	public static Mesh readLXFMLFile(InputStream lxfmlFileStream, LIFReader dbLifReader) throws IOException {

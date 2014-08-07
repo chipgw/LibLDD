@@ -17,10 +17,10 @@ public class LXFReader {
 			ZipFile zipFile = new ZipFile(lxfFile);
 			ZipEntry lxfmlEntry = zipFile.getEntry("IMAGE100.LXFML");
 			InputStream stream = zipFile.getInputStream(lxfmlEntry);
-			Mesh returnValue = LXFMLReader.readLXFMLFile(stream, dbLifReader);
+			Mesh lxfMesh = LXFMLReader.readLXFMLFile(stream, dbLifReader);
 			stream.close();
 			zipFile.close();
-			return returnValue;
+			return lxfMesh;
 		} catch(ZipException e) {
 			throw new IOException(e);
 		}
